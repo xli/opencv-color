@@ -1,0 +1,23 @@
+#!/usr/bin/env ruby
+
+require 'optparse'
+require 'yaml'
+
+#add lib for test environment
+if File.exists?(File.expand_path(File.dirname(__FILE__) + '/../lib/opencv-color.rb'))
+  $LOAD_PATH.unshift File.expand_path(File.dirname(__FILE__) + '/../lib')
+end
+
+begin
+  require 'opencv-color'
+rescue LoadError
+  require 'rubygems'
+  require 'opencv-color'
+end
+
+if ARGV.empty? || ['-h', '--help'].include?(ARGV[0])
+  puts "opencv-color <sample images directory path>"
+end
+
+data = OpenCVColor.learn(ARGV[0])
+puts YAML.dump(data)
