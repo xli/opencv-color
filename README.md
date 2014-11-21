@@ -20,11 +20,11 @@ Or install it yourself as:
 
 ## Usage
 
-Put your color sample images input the following structure:
+Put your color sample images into the following structure:
 
 * color samples root directory
- * color name
-  * color sample image files
+  * color name
+    * color sample image files
 
 See color-samples directory as example.
 
