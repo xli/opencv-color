@@ -18,23 +18,31 @@ end
 
 require 'optparse'
 
-sample_images_dir = ARGV.pop
-
 options = {
   format: 'yaml'
 }
-OptionParser.new do |opts|
+op = OptionParser.new do |opts|
   opts.banner = "Usage: opencv-color [options] <sample images directory path>"
 
   opts.on("-f", "--format [FORMAT]", "Output format 'yaml' or 'objc', default is yaml") do |format|
     options[:format] = format
   end
 
-  opts.on("-h", "--help", "Show this message") do |v|
+  opts.on_tail("-h", "--help", "Show this message") do
     puts opts
     exit
   end
-end.parse!
+end
+op.parse!
+
+sample_images_dir = ARGV.pop
+
+unless File.directory?(sample_images_dir)
+  puts "'#{sample_images_dir}' is not a directory"
+  puts
+  puts op
+  exit(-1)
+end
 
 data = OpenCVColor.learn(sample_images_dir)
 puts case options[:format]
