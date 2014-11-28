@@ -45,11 +45,11 @@ module OpenCVColor
       range = group.map(&:to_scale).inject({low: [], high: []}) do |memo, g|
         sd = g.sd
         mean = g.mean
-        memo[:low] << [mean - 3 * sd, 0].max
-        memo[:high] << mean + 3 * sd
+        memo[:low] << ([mean - 3 * sd, 0].max).floor
+        memo[:high] << (mean + 3 * sd).ceil
         memo
       end
-      [File.basename(color), range]
+      [File.basename(color).downcase.gsub(/[^a-z_]/, '_'), range]
     end]
   end
 

@@ -1,0 +1,26 @@
+#ifndef ColorRanges_h
+#define ColorRanges_h
+
+#import <opencv2/opencv.hpp>
+using namespace cv;
+
+namespace cr {
+    struct ColorRange {
+        String name;
+        Scalar low;
+        Scalar high;
+        ColorRange(const String& n, const Scalar& l, const Scalar& h) {
+            name = n;
+            low = l;
+            high = h;
+        };
+    };
+
+<%= data.map {|color, range| "    static ColorRange #{color} = ColorRange(#{color.inspect}, Scalar(#{range[:low].join(', ')}), Scalar(#{range[:high].join(', ')}));" }.join("\n") %>
+
+    static ColorRange colors[<%= data.size %>] {
+      <%= data.map {|c, r| c}.join(",\n      ") %>
+    };
+}
+
+#endif

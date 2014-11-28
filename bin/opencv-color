@@ -2,6 +2,7 @@
 
 require 'optparse'
 require 'yaml'
+require 'erb'
 
 #add lib for test environment
 if File.exists?(File.expand_path(File.dirname(__FILE__) + '/../lib/opencv-color.rb'))
@@ -15,9 +16,31 @@ rescue LoadError
   require 'opencv-color'
 end
 
-if ARGV.empty? || ['-h', '--help'].include?(ARGV[0])
-  puts "opencv-color <sample images directory path>"
-end
+require 'optparse'
 
-data = OpenCVColor.learn(ARGV[0])
-puts YAML.dump(data)
+sample_images_dir = ARGV.pop
+
+options = {
+  format: 'yaml'
+}
+OptionParser.new do |opts|
+  opts.banner = "Usage: opencv-color [options] <sample images directory path>"
+
+  opts.on("-f", "--format [FORMAT]", "Output format 'yaml' or 'objc', default is yaml") do |format|
+    options[:format] = format
+  end
+
+  opts.on("-h", "--help", "Show this message") do |v|
+    puts opts
+    exit
+  end
+end.parse!
+
+data = OpenCVColor.learn(sample_images_dir)
+puts case options[:format]
+when 'objc'
+  template = File.join(File.dirname(__FILE__), '..', 'lib', 'opencv-color', 'objc.erb')
+  ERB.new(File.read(template)).result(binding)
+else
+  YAML.dump(data)
+end
