@@ -20,6 +20,10 @@ Or install it yourself as:
 
 ## Usage
 
+    Usage: opencv-color [options] <sample images directory path>
+        -f, --format [FORMAT]            Output format 'yaml' or 'objc', default is yaml
+        -h, --help                       Show this message
+
 Put your color sample images into the following structure:
 
 * color samples root directory
