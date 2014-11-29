@@ -33,28 +33,45 @@ module OpenCVColor
   end
 
   def learn(dir)
-    Hash[samples(dir).map do |color, files|
-      group = [[], [], [], []]
+    Hash[samples(dir).map do |color_dir, files|
+      group = [[], [], []]
       files.map(&method(:load_image_colors)).each do |colors|
         colors.each do |c|
-          4.times do |i|
+          3.times do |i|
             group[i] << c[i]
           end
         end
       end
-      range = group.map(&:to_scale).inject({low: [], high: []}) do |memo, g|
+      range = group.map(&:to_scale).each_with_index.inject({low: [], high: [], mean: [], sd: []}) do |memo, d|
+        g, index = d
         sd = g.sd
         mean = g.mean
-        memo[:low] << ([mean - 3 * sd, 0].max).floor
-        memo[:high] << (mean + 3 * sd).ceil
+        memo[:low] << ([mean - 3 * sd, min_value].max).floor
+        memo[:high] << ([mean + 3 * sd, max_value(index)].min).ceil
+        memo[:mean] << mean
+        memo[:sd] << sd
         memo
       end
-      [File.basename(color).downcase.gsub(/[^a-z_]/, '_'), range]
+      [color_name(color_dir), range]
     end]
   end
 
+  def color_name(path)
+    File.basename(path).downcase.gsub(/[^a-z_]/, '_')
+  end
+
+  def min_value
+    0
+  end
+
+  def max_value(i)
+    # H => 0
+    i == 0 ? 179 : 255
+  end
+
   def load_image_colors(file)
-    Colors.new(IplImage.load(file, OpenCV::CV_LOAD_IMAGE_ANYCOLOR | OpenCV::CV_LOAD_IMAGE_ANYDEPTH).BGR2HSV)
+    img = IplImage.load(file, OpenCV::CV_LOAD_IMAGE_ANYCOLOR | OpenCV::CV_LOAD_IMAGE_ANYDEPTH)
+    Colors.new(img.smooth(:median, 3).BGR2HSV)
   end
 
 end
