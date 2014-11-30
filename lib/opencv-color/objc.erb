@@ -16,7 +16,7 @@ namespace cr {
         };
     };
 
-<%= data.map {|color, range| "    static ColorRange #{color} = ColorRange(#{color.inspect}, Scalar(#{range[:low].join(', ')}), Scalar(#{range[:high].join(', ')}));" }.join("\n") %>
+<%= data.map {|color, range| "    static ColorRange #{color} = ColorRange(#{color.inspect}, Scalar(#{range[:low].join(', ')}), Scalar(#{range[:high].join(', ')})); // mean: #{range[:mean]}, sd: #{range[:sd]}" }.join("\n") %>
 
     static ColorRange colors[<%= data.size %>] {
       <%= data.map {|c, r| c}.join(",\n      ") %>
