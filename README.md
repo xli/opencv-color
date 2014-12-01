@@ -1,5 +1,7 @@
 # OpenCVColor
 
+[Built with :yellow_heart: and :coffee: in San Francisco](http://getmingle.io)
+
 OpenCV is a great library for writing Computer Vision software. However, OpenCV's HSV format is different than what you would expect! This gem trys to learn HSV color range from sample images for your OpenCV program to detect color.
 
 ## Installation
