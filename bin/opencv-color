@@ -7,6 +7,7 @@ require 'erb'
 #add lib for test environment
 if File.exists?(File.expand_path(File.dirname(__FILE__) + '/../lib/opencv-color.rb'))
   $LOAD_PATH.unshift File.expand_path(File.dirname(__FILE__) + '/../lib')
+  require 'rubygems'
 end
 
 begin
@@ -19,12 +20,12 @@ end
 require 'optparse'
 
 options = {
-  format: 'yaml'
+  format: 'table'
 }
 op = OptionParser.new do |opts|
   opts.banner = "Usage: opencv-color [options] <sample images directory path>"
 
-  opts.on("-f", "--format [FORMAT]", "Output format 'yaml' or 'objc', default is yaml") do |format|
+  opts.on("-f", "--format [FORMAT]", "Output format 'yaml', 'table' or 'objc', default is table") do |format|
     options[:format] = format
   end
 
@@ -44,11 +45,17 @@ unless File.directory?(sample_images_dir)
   exit(-1)
 end
 
-data = OpenCVColor.learn(sample_images_dir)
+data = OpenCVColor.learn(sample_images_dir).sort_by{|k,v|v[:low][0]}
 puts case options[:format]
 when 'objc'
   template = File.join(File.dirname(__FILE__), '..', 'lib', 'opencv-color', 'objc.erb')
   ERB.new(File.read(template)).result(binding)
-else
+when 'yaml'
   YAML.dump(data)
+when 'table'
+  require 'terminal-table'
+  rows = data.map {|k,v| [k, v[:low], v[:high], v[:mean].map(&:to_i), v[:sd].map(&:to_i)]}
+  table = Terminal::Table.new :headings => ["Color", "Low", "High", "Mean", "SD"], :rows => rows
+else
+  puts "Unknown format: #{options[:format].inspect}"
 end
