@@ -113,7 +113,7 @@ module OpenCVColor
 
   def load_image_colors(file)
     img = IplImage.load(file, OpenCV::CV_LOAD_IMAGE_ANYCOLOR | OpenCV::CV_LOAD_IMAGE_ANYDEPTH)
-    colors(img.smooth(:median, 3).BGR2HSV)
+    colors(img.BGR2HSV)
   end
 
   def colors(img)
