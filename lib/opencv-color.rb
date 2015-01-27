@@ -72,6 +72,13 @@ module OpenCVColor
   include OpenCV
 
   module_function
+  def normalize_colors(colors)
+    size = colors.map(&:size).min
+    colors.map do |cs|
+      cs.to_a.shuffle.first(size)
+    end
+  end
+
   def cluster_colors(colors, max_distance=20)
     clusters = []
     colors.each do |cs|
@@ -99,7 +106,8 @@ module OpenCVColor
   def learn(dir)
     ret = samples(dir).inject({}) do |memo, cd|
       color_dir, files = cd
-      cluster_colors(files.map(&method(:load_image_colors))).each_with_index do |cluster, i|
+      colors = files.map(&method(:load_image_colors))
+      cluster_colors(normalize_colors(colors)).each_with_index do |cluster, i|
         memo[color_name(color_dir, i)] = cluster.color_range
       end
       memo

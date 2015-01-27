@@ -75,4 +75,21 @@ class TestOpencvColor < MiniTest::Test
     assert_equal [179,255,255], clusters[1].color_range[:high]
     assert_equal [177, 252, 252], clusters[1].color_range[:mean]
   end
+
+  def test_normalize_colors_by_min_image_size
+    image1 = Image.new([
+      [[0,0,0], [2,2,2]],
+      [[175,250,250], [179,254,254]]
+    ])
+    image2 = Image.new([
+      [[0,0,0]],
+      [[175,250,250]]
+    ])
+    image3 = Image.new([
+      [[0,0,0],[0,0,0],[0,0,0]],
+      [[175,250,250],[0,0,0],[0,0,0]]
+    ])
+    colors = OpenCVColor.normalize_colors([OpenCVColor.colors(image1), OpenCVColor.colors(image2), OpenCVColor.colors(image3)])
+    assert_equal [2,2,2], colors.map(&:size)
+  end
 end
