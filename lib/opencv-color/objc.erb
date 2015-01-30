@@ -6,20 +6,31 @@ using namespace cv;
 
 namespace cr {
     struct ColorRange {
-        String name;
         Scalar low;
         Scalar high;
-        ColorRange(const String& n, const Scalar& l, const Scalar& h) {
-            name = n;
+        ColorRange(const Scalar& l, const Scalar& h) {
             low = l;
             high = h;
         };
     };
 
-<%= data.map {|color, range| "    static ColorRange #{color} = ColorRange(#{color.inspect}, Scalar(#{range[:low].join(', ')}), Scalar(#{range[:high].join(', ')})); // mean: #{range[:mean]}, sd: #{range[:sd]}" }.join("\n") %>
+<%= data.map {|color, range| "    static ColorRange #{color} = ColorRange(Scalar(#{range[:low].join(', ')}), Scalar(#{range[:high].join(', ')}));" }.join("\n") %>
 
-    static ColorRange colors[<%= data.size %>] {
-      <%= data.map {|c, r| c}.join(",\n      ") %>
+    static ColorRange orange        = ColorRange(Scalar(0,  60, 100), Scalar(22, 255, 255));
+    static ColorRange yellow        = ColorRange(Scalar(22, 60, 100), Scalar(38, 255, 255));
+    static ColorRange green         = ColorRange(Scalar(38, 60, 100), Scalar(75, 255, 255));
+    static ColorRange blue          = ColorRange(Scalar(75, 60, 100), Scalar(130, 255, 255));
+    static ColorRange violet        = ColorRange(Scalar(130, 60, 100), Scalar(160, 255, 255));
+    static ColorRange red           = ColorRange(Scalar(160, 60, 100), Scalar(179, 255, 255));
+
+    static ColorRange colors[] {
+        orange,
+        yellow,
+        green,
+        blue,
+        violet,
+        red,
+        <%= data.map {|c, r| c}.join(",\n      ") %>
     };
 }
 
