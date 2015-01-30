@@ -45,6 +45,10 @@ module OpenCVColor
       @hs / @h.size
     end
 
+    def size
+      @h.size
+    end
+
     def colors
       [@h, @s, @v]
     end
@@ -79,7 +83,7 @@ module OpenCVColor
     end
   end
 
-  def cluster_colors(colors, max_distance=20)
+  def cluster_colors(colors, max_distance=10)
     clusters = []
     colors.each do |cs|
       cs.each do |color|
@@ -107,7 +111,7 @@ module OpenCVColor
     ret = samples(dir).inject({}) do |memo, cd|
       color_dir, files = cd
       colors = files.map(&method(:load_image_colors))
-      cluster_colors(normalize_colors(colors)).each_with_index do |cluster, i|
+      cluster_colors(normalize_colors(colors)).reject{|c|c.size < 1000}.each_with_index do |cluster, i|
         memo[color_name(color_dir, i)] = cluster.color_range
       end
       memo
@@ -116,7 +120,7 @@ module OpenCVColor
   end
 
   def color_name(path, i)
-    "#{File.basename(path).downcase.gsub(/[^a-z_]/, '_')}_#{i}"
+    "#{File.basename(path).downcase.gsub(/[^a-z0-9_]/, '_')}_#{i}"
   end
 
   def load_image_colors(file)
