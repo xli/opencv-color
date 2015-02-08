@@ -83,7 +83,7 @@ module OpenCVColor
     end
   end
 
-  def cluster_colors(colors, max_distance=10)
+  def cluster_colors(colors, max_distance=20)
     clusters = []
     colors.each do |cs|
       cs.each do |color|
